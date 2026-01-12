@@ -9,16 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Recursos\Imagenes\carpeta.png" />
     <None Remove="Recursos\Imagenes\copy.png" />
     <None Remove="Recursos\Imagenes\cut.png" />
     <None Remove="Recursos\Imagenes\paste.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Recursos\Imagenes\carpeta.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Recursos\Imagenes\copy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Recursos\Imagenes\cut.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Recursos\Imagenes\archivo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Recursos\Imagenes\paste.png">

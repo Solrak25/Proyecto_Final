@@ -8,5 +8,11 @@ namespace SafeDoc
 {
     public class Carpeta
     {
+        public string Nombre { get; set; }
+
+        public Carpeta(string nombre)
+        {
+            Nombre = nombre;
+        }
     }
 }

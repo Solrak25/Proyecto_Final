@@ -1,4 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+    <ControlTemplate x:Key="Archivos" TargetType="Button">
+        <StackPanel Margin="15" Background="{TemplateBinding Background}">
+            <Image Source="/Recursos/Imagenes/archivo.png" Width="50" Height="50" Margin="5"/>
+            <Label Content="{TemplateBinding Content}" FontSize="15"/>
+        </StackPanel>
+    </ControlTemplate>
+    <ControlTemplate x:Key="Carpetas" TargetType="Button">
+        <StackPanel Margin="15" Background="{TemplateBinding Background}">
+            <Image Source="/Recursos/Imagenes/carpeta.png" Width="50" Height="50" Margin="5"/>
+            <Label Content="{TemplateBinding Content}" FontSize="15"/>
+        </StackPanel>
+    </ControlTemplate>
 </ResourceDictionary>

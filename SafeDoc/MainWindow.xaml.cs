@@ -16,11 +16,10 @@ namespace SafeDoc
     /// </summary>
     public partial class MainWindow : Window
     {
+        public List<object> listaElementos = new List<object>();
 
-        public List<Archivo> listaArchivos = new List<Archivo>();
-
-        private Archivo archivoSeleccionado;
-
+        private object elementoSeleccionado;
+        private object clipboardElemento;
 
         public MainWindow()
         {
@@ -31,73 +30,84 @@ namespace SafeDoc
             Archivo archivo3 = new Archivo("Archivo3");
             Archivo archivo4 = new Archivo("Archivo4");
             Archivo archivo5 = new Archivo("Archivo5");
-            añadirArchivo(archivo1);
-            añadirArchivo(archivo2);
-            añadirArchivo(archivo3);
-            añadirArchivo(archivo4);
-            añadirArchivo(archivo5);
-        }
+            Carpeta carpeta = new Carpeta("Carpeta1");
 
-        private Archivo clipboardArchivo;
-        private bool isCut = false;
+            añadirElemento(carpeta);
+            añadirElemento(archivo1);
+            añadirElemento(archivo2);
+            añadirElemento(archivo3);
+            añadirElemento(archivo4);
+            añadirElemento(archivo5);
+        }
 
         private void Copy_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (archivoSeleccionado == null) return;
-
-            clipboardArchivo = archivoSeleccionado;
+            if (elementoSeleccionado == null) return;
+            clipboardElemento = elementoSeleccionado;
         }
 
         private void Cut_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (archivoSeleccionado == null) return;
+            if (elementoSeleccionado == null) return;
 
-            clipboardArchivo = archivoSeleccionado;
-            eliminarArchivo(archivoSeleccionado);
+            clipboardElemento = elementoSeleccionado;
+            eliminarElemento(elementoSeleccionado);
         }
 
         private void Paste_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (clipboardArchivo == null) return;
+            if (clipboardElemento == null) return;
 
-            Archivo nuevo = new Archivo(clipboardArchivo.Nombre);
-            añadirArchivo(nuevo);
+            // Si era Archivo
+            if (clipboardElemento is Archivo a)
+                añadirElemento(new Archivo(a.Nombre));
+
+            // Si era Carpeta
+            else if (clipboardElemento is Carpeta c)
+                añadirElemento(new Carpeta(c.Nombre));
         }
 
-
-        public void añadirArchivo(Archivo archivo)
+        public void añadirElemento(object elemento)
         {
-            listaArchivos.Add(archivo);
+            listaElementos.Add(elemento);
 
-            Button btnArchivo = new Button();
-            btnArchivo.Width = 60;
-            btnArchivo.Height = 75;
-            btnArchivo.Margin = new Thickness(20);
-            btnArchivo.Content = archivo.Nombre;
+            Button btn = new Button();
+            btn.Background = Brushes.Transparent;
+            btn.Tag = elemento;
+            btn.Click += btnElemento_Click;
 
-            btnArchivo.Tag = archivo;
-            btnArchivo.Click += btnArchivo_Click;
+            // texto mostrado
+            if (elemento is Archivo a)
+            {
+                btn.Content = a.Nombre;
+                btn.Template = (ControlTemplate)FindResource("Archivos");
+            }
+            else if (elemento is Carpeta c)
+            {
+                btn.Content = c.Nombre;
+                btn.Template = (ControlTemplate)FindResource("Carpetas");
+            }
 
-            WPExplorador.Children.Add(btnArchivo);
+            WPExplorador.Children.Add(btn);
         }
 
-
-        public void eliminarArchivo(Archivo archivo)
+        public void eliminarElemento(object elemento)
         {
-            int id = listaArchivos.IndexOf(archivo);
-            listaArchivos.Remove(archivo);
+            int id = listaElementos.IndexOf(elemento);
+            listaElementos.Remove(elemento);
             WPExplorador.Children.RemoveAt(id);
         }
 
-        private void btnArchivo_Click(object sender, RoutedEventArgs e)
+        private void btnElemento_Click(object sender, RoutedEventArgs e)
         {
-            foreach(Button item in WPExplorador.Children)
-            {
-                item.Background = Brushes.LightGray;
-            }
-            archivoSeleccionado = (Archivo)((Button)sender).Tag;
-            Button BtnSeleccionado = sender as Button;
-            BtnSeleccionado.Background = Brushes.LightBlue;
+            foreach (Button item in WPExplorador.Children)
+                item.Background = Brushes.Transparent;
+
+            elementoSeleccionado = ((Button)sender).Tag;
+
+            Button btnSeleccionado = sender as Button;
+            btnSeleccionado.Background = Brushes.LightBlue;
         }
     }
+
 }
