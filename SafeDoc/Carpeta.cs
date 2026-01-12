@@ -10,9 +10,12 @@ namespace SafeDoc
     {
         public string Nombre { get; set; }
 
-        public Carpeta(string nombre)
+        public Carpeta CarpetaMadre { get; set; }
+
+        public Carpeta(string nombre, Carpeta carpetaMadre = null)
         {
             Nombre = nombre;
+            CarpetaMadre = carpetaMadre;
         }
     }
 }
