@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+
 
 namespace SafeDoc
 {
@@ -27,13 +29,15 @@ namespace SafeDoc
             carpetaActual = carpetaRaiz;
             listaElementos.Add(carpetaRaiz);
 
-            Archivo archivo1 = new Archivo("Archivo1", carpetaRaiz);
-            Archivo archivo2 = new Archivo("Archivo2", carpetaRaiz);
-            Archivo archivo3 = new Archivo("Archivo3", carpetaRaiz);
-            Archivo archivo4 = new Archivo("Archivo4", carpetaRaiz);
-            Archivo archivo5 = new Archivo("Archivo5", carpetaRaiz);
+            Archivo archivo1 = new Archivo("Archivo1.txt", carpetaRaiz);
+            Archivo archivo2 = new Archivo("Archivo2.txt", carpetaRaiz);
+            Archivo archivo3 = new Archivo("Archivo3.txt", carpetaRaiz);
+            Archivo archivo4 = new Archivo("Archivo4.txt", carpetaRaiz);
+            Archivo archivo5 = new Archivo("Archivo5.txt", carpetaRaiz);
             Carpeta carpeta1 = new Carpeta("Carpeta1", carpetaRaiz);
-            Archivo archivo6 = new Archivo("Archivo6", carpeta1);
+            Archivo archivo6 = new Archivo("Archivo6.txt", carpeta1);
+            Carpeta carpeta2 = new Carpeta("Carpeta2", carpeta1);
+            Archivo archivo7 = new Archivo("Archivo7.txt", carpeta2);
 
             listaElementos.Add(archivo1);
             listaElementos.Add(archivo2);
@@ -42,6 +46,8 @@ namespace SafeDoc
             listaElementos.Add(archivo5);
             listaElementos.Add(carpeta1);
             listaElementos.Add(archivo6);
+            listaElementos.Add(carpeta2);
+            listaElementos.Add(archivo7);
 
             abrir(carpetaRaiz);
         }
@@ -83,12 +89,12 @@ namespace SafeDoc
             // texto mostrado
             if (elemento is Archivo a)
             {
-                btn.Content = a.Nombre;
+                btn.Content = comprobarNombre(a.Nombre);
                 btn.Template = (ControlTemplate)FindResource("Archivos");
             }
             else if (elemento is Carpeta c)
             {
-                btn.Content = c.Nombre;
+                btn.Content = comprobarNombre(c.Nombre);
                 btn.Template = (ControlTemplate)FindResource("Carpetas");
                 btn.MouseDoubleClick += (s, e) =>
                 {
@@ -101,20 +107,20 @@ namespace SafeDoc
 
         public void eliminarElemento(object elemento)
         {
-        Button botonAEliminar = null;
+            Button botonAEliminar = null;
 
-        foreach (UIElement ui in WPExplorador.Children)
-        {
-            if (ui is Button b && Equals(b.Tag, elemento))
+            foreach (UIElement ui in WPExplorador.Children)
             {
-                botonAEliminar = b;
-                break;
+                if (ui is Button b && Equals(b.Tag, elemento))
+                {
+                    botonAEliminar = b;
+                    break;
+                }
             }
-        }
 
-        if (botonAEliminar != null)
-            WPExplorador.Children.Remove(botonAEliminar);
-    }
+            if (botonAEliminar != null)
+                WPExplorador.Children.Remove(botonAEliminar);
+        }
 
         private void btnElemento_Click(object sender, RoutedEventArgs e)
         {
@@ -139,6 +145,40 @@ namespace SafeDoc
                     añadirElemento(c);
             }
         }
-    }
 
+        private void Anterior_Click(object sender, RoutedEventArgs e)
+        {
+            if (carpetaActual.CarpetaMadre != null) abrir(carpetaActual.CarpetaMadre);
+        }
+
+        private string comprobarNombre(string nombre)
+        {
+            string baseName = System.IO.Path.GetFileNameWithoutExtension(nombre);
+            string extension = System.IO.Path.GetExtension(nombre);
+
+            int contador = 1;
+            string nuevoNombre = nombre;
+
+            bool existe;
+            do
+            {
+                existe = false;
+
+                foreach (Button item in WPExplorador.Children)
+                {
+                    if (item.Content?.ToString() == nuevoNombre)
+                    {
+                        nuevoNombre = $"{baseName} ({contador}){extension}";
+                        contador++;
+                        existe = true;
+                        break;
+                    }
+                }
+
+            } while (existe);
+
+            return nuevoNombre;
+        }
+
+    }
 }

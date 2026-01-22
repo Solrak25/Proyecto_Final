@@ -12,6 +12,7 @@
     <None Remove="Recursos\Imagenes\carpeta.png" />
     <None Remove="Recursos\Imagenes\copy.png" />
     <None Remove="Recursos\Imagenes\cut.png" />
+    <None Remove="Recursos\Imagenes\flecha-izquierda.png" />
     <None Remove="Recursos\Imagenes\paste.png" />
   </ItemGroup>
 
@@ -26,6 +27,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Recursos\Imagenes\archivo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Recursos\Imagenes\flecha-izquierda.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Recursos\Imagenes\paste.png">

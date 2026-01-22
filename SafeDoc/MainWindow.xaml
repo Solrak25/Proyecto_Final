@@ -33,9 +33,14 @@
                     <Image Source="Recursos/Imagenes/paste.png"/>
                 </Button>
             </ToolBar>
+            <ToolBar>
+                <Button Click="Anterior_Click">
+                    <Image Source="/Recursos/Imagenes/flecha-izquierda.png"  Width="24" Height="15" Stretch="Uniform"/>
+                </Button>
+            </ToolBar>
         </ToolBarTray>
         <WrapPanel Name="WPExplorador" Grid.Row="1">
-            
+
         </WrapPanel>
     </Grid>
 </Window>
