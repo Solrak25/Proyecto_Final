@@ -3,8 +3,7 @@
 ## Descripción del proyecto
 
 ### Idea general de la aplicación  
-La aplicación es un explorador de archivos para Windows desarrollado con .NET 8 y WPF en C#. Permite trabajar con un único archivo cifrado que actúa como un contenedor seguro.  
-El usuario puede abrir ese archivo, descifrar su contenido y visualizarlo como si fuera un explorador de archivos tradicional (carpetas y ficheros), pudiendo añadir, modificar y eliminar elementos.  
+La aplicación es un explorador de archivos para Windows desarrollado con .NET 8 y WPF en C#. Permite trabajar con un único archivo cifrado que actúa como un contenedor seguro. El usuario puede abrir ese archivo, descifrar su contenido y visualizarlo como si fuera un explorador de archivos tradicional (carpetas y ficheros), pudiendo añadir, modificar y eliminar elementos.  
 Todos los cambios se guardan nuevamente cifrados dentro del mismo archivo.
 
 ### Problema que resuelve  
