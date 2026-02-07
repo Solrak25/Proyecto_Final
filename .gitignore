@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+!Ejecutable/Relase/net8.0-windows7.0/SafeDoc.exe
