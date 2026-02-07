@@ -17,7 +17,7 @@ Esta versión es una prueba de concepto (PoC) para demostrar el funcionamiento b
 
 1. Ve al repositorio de GitHub del proyecto.
 2. Descarga el archivo comprimido de la versión PoC:
-   - `SafeDoc.zip` (o nombre similar).
+   - `Proyecto_Final-master.zip` (o nombre similar).
 3. Extrae el contenido en una carpeta de tu ordenador.
 
 ---
@@ -25,12 +25,12 @@ Esta versión es una prueba de concepto (PoC) para demostrar el funcionamiento b
 ## ▶️ Ejecución
 
 1. Entra en la carpeta extraída.
-2. Haz doble clic en el archivo:
+
+2. Entra en la Carpeta de Ejecutables
+
+3. Haz doble clic en el archivo:
 
    `SafeDoc.exe`
-
-3. Se abrirá la ventana de login.
-
 ---
 
 ## Uso básico

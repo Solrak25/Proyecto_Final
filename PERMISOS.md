@@ -1,6 +1,6 @@
 # Permisos, Licencias y Riesgos – Explorador de Archivos Cifrados
 
-## 🔐 Permisos y autorizaciones necesarias
+## Permisos y autorizaciones necesarias
 
 - **.NET 8 y WPF:**  
   Tecnologías de Microsoft de uso gratuito para desarrollo y distribución.
@@ -16,7 +16,7 @@
 
 ---
 
-## ⚠️ Identificación de riesgos
+## Identificación de riesgos
 
 ### Riesgos técnicos
 - Fallos en el sistema de cifrado.
