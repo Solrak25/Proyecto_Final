@@ -56,10 +56,6 @@ bld/
 *.pidb
 *.svclog
 
-# Ignore all exe files except the ones que quieras
-*.exe
-# !Ejecutable/SaveDoc.exe  # si quieres rastrear ese ejecutable, descomenta esta línea
-
 # Otros ignores estándar (NuGet, test, Azure, etc.)
 *.nupkg
 *.snupkg
