@@ -18,6 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\archivo.png" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\carpeta.png" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\copy.png" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\cut.png" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\flecha-izquierda.png" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\paste.png" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.deps.json" />
+    <Content Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.runtimeconfig.json" />
     <Content Include="Recursos\Imagenes\carpeta.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -36,6 +44,12 @@
     <Content Include="Recursos\Imagenes\paste.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.dll" />
+    <None Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.exe" />
+    <None Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.pdb" />
   </ItemGroup>
 
 </Project>
