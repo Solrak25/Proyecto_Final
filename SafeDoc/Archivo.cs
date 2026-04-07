@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace SafeDoc
 {
-    public class Archivo
+    public class Archivo : Elemento
     {
-        public string Nombre { get; set; }
-        public Carpeta CarpetaMadre { get; set; }
+        public string ContenidoTexto { get; set; } = string.Empty;
 
-        public Archivo(string nombre, Carpeta carpetaMadre)
+        public Archivo() { }
+
+        public Archivo(string nombre, Carpeta? carpetaMadre)
         {
             Nombre = nombre;
             CarpetaMadre = carpetaMadre;

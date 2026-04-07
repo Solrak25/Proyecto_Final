@@ -1,46 +1,329 @@
-﻿<Window x:Class="SafeDoc.MainWindow"
+<Window x:Class="SafeDoc.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SafeDoc"
         mc:Ignorable="d"
-        Title="Explorador de Archivos" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="SafeDoc Entorno Seguro" Height="600" Width="900" 
+        WindowStartupLocation="CenterScreen"
+        Background="#202020"
+        Foreground="#FFFFFF">
+    <Window.Resources>
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="BorderBrush" Value="#444444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <Style TargetType="{x:Type ContextMenu}">
+            <Setter Property="Background" Value="#252525"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#404040"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ItemsPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type Separator}">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Background" Value="#404040"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Separator}">
+                        <Border Background="{TemplateBinding Background}" Height="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type MenuItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="4" BorderThickness="0" Margin="0,1" TextElement.Foreground="{TemplateBinding Foreground}">
+                            <ContentPresenter ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#383838"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#888888"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Window.CommandBindings>
         <CommandBinding Command="Cut" Executed="Cut_Executed"/>
         <CommandBinding Command="Copy" Executed="Copy_Executed"/>
         <CommandBinding Command="Paste" Executed="Paste_Executed"/>
+        <CommandBinding Command="Delete" Executed="Delete_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindow.CompartirCommand}" Executed="BtnCompartir_Click"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="X" Command="Cut" Modifiers="Ctrl"/>
         <KeyBinding Key="C" Command="Copy" Modifiers="Ctrl"/>
         <KeyBinding Key="V" Command="Paste" Modifiers="Ctrl"/>
+        <KeyBinding Key="Delete" Command="Delete"/>
     </Window.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ToolBarTray>
-            <ToolBar>
-                <Button Command="Cut">
-                    <Image Source="Recursos/Imagenes/cut.png"/>
-                </Button>
-                <Button Command="Copy">
-                    <Image Source="Recursos/Imagenes/copy.png"/>
-                </Button>
-                <Button Command="Paste">
-                    <Image Source="Recursos/Imagenes/paste.png"/>
-                </Button>
-            </ToolBar>
-            <ToolBar>
-                <Button Click="Anterior_Click">
-                    <Image Source="/Recursos/Imagenes/flecha-izquierda.png"  Width="24" Height="15" Stretch="Uniform"/>
-                </Button>
-            </ToolBar>
-        </ToolBarTray>
-        <WrapPanel Name="WPExplorador" Grid.Row="1">
 
-        </WrapPanel>
+        <!-- TOP BAR -->
+        <Border Background="#202020" BorderBrush="#2D2D2D" BorderThickness="0,0,0,1">
+            <Grid Margin="15,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                    <Button Click="Anterior_Click" ToolTip="Volver un nivel arriba" 
+                            Background="Transparent" BorderThickness="0" Margin="0,0,15,0" Cursor="Hand" Width="32" Height="32">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="←" Foreground="#CCCCCC" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-4,0,0"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bgBorder" Property="Background" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <TextBlock x:Name="txtRuta" VerticalAlignment="Center" FontSize="14" Foreground="#CCCCCC" Margin="5,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
+                    <Button Command="Cut" ToolTip="Cortar" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="✂" Foreground="#CCCCCC" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bgBorder" Property="Background" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Command="Copy" ToolTip="Copiar" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="⧉" Foreground="#CCCCCC" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bgBorder" Property="Background" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Command="Paste" ToolTip="Pegar" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
+                         <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="📋" Foreground="#CCCCCC" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" TargetName="bgBorder" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Border Width="1" Background="#333333" Margin="5,12"/>
+                    <Button Command="Delete" ToolTip="Eliminar seleccionado" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
+                         <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="🗑️" Foreground="#FF99A4" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" TargetName="bgBorder" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <Border Width="1" Background="#333333" Margin="10,12"/>
+
+                    <Button ToolTip="Recibir Carpeta (Pegar Código)" Click="BtnRecibir_Click" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
+                         <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="📥" Foreground="#60CDFF" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" TargetName="bgBorder" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <Border Width="1" Background="#333333" Margin="10,12"/>
+
+                    <Button Click="BtnNuevaCarpeta_Click" ToolTip="Crear nueva carpeta" Background="Transparent" BorderThickness="0" Margin="5" Cursor="Hand" Width="40" Height="36">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="📁+" Foreground="#60CDFF" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bgBorder" Property="Background" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Click="BtnNuevoArchivo_Click" ToolTip="Crear nuevo archivo" Background="Transparent" BorderThickness="0" Margin="5" Cursor="Hand" Width="40" Height="36">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="📄+" Foreground="#60CDFF" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bgBorder" Property="Background" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- EXPLORER (MVVM DataBinding style) -->
+        <Grid Grid.Row="1">
+            <ListBox x:Name="WPExploradorItems" Background="Transparent" BorderThickness="0" Padding="15"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionMode="Extended"
+                     PreviewMouseLeftButtonDown="List_PreviewMouseLeftButtonDown"
+                     PreviewMouseMove="List_PreviewMouseMove"
+                     PreviewMouseLeftButtonUp="List_PreviewMouseLeftButtonUp">
+            <ListBox.ContextMenu>
+                <ContextMenu Background="#2D2D2D" Foreground="#FFFFFF" BorderBrush="#444444" BorderThickness="1">
+                    <MenuItem Header="Pegar" Command="Paste"/>
+                    <Separator Background="#444444"/>
+                    <MenuItem Header="Nueva Carpeta" Click="BtnNuevaCarpeta_Click"/>
+                    <MenuItem Header="Nuevo Archivo" Click="BtnNuevoArchivo_Click"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="10"/>
+                    <Setter Property="Margin" Value="5"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Width" Value="100"/>
+                    <Setter Property="Height" Value="100"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu Background="#2D2D2D" Foreground="#FFFFFF" BorderBrush="#444444" BorderThickness="1">
+                                <MenuItem Header="Copiar" Command="Copy"/>
+                                <MenuItem Header="Cortar" Command="Cut"/>
+                                <MenuItem Header="Compartir" Command="{x:Static local:MainWindow.CompartirCommand}"/>
+                                <Separator Background="#444444"/>
+                                <MenuItem Header="Eliminar" Command="Delete" Foreground="#FF99A4"/>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <EventSetter Event="MouseDoubleClick" Handler="Item_MouseDoubleClick"/>
+                    
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#1AFFFFFF"/>
+                            <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#0DFFFFFF"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <ListBox.Resources>
+                <!-- DIBUJADO DE CARPETA -->
+                <DataTemplate DataType="{x:Type local:Carpeta}">
+                    <StackPanel>
+                        <TextBlock Text="📁" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,5" Foreground="#60CDFF"/>
+                        <TextBlock Text="{Binding Nombre}" Foreground="#FFFFFF" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35"/>
+                    </StackPanel>
+                </DataTemplate>
+                
+                <!-- DIBUJADO DE ARCHIVO -->
+                <DataTemplate DataType="{x:Type local:Archivo}">
+                    <StackPanel>
+                        <TextBlock Text="📄" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,5" Foreground="#CCCCCC"/>
+                        <TextBlock Text="{Binding Nombre}" Foreground="#CCCCCC" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxHeight="35"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+
+        <Canvas x:Name="selectionCanvas" IsHitTestVisible="False">
+            <Rectangle x:Name="selectionBox" Fill="#4060CDFF" Stroke="#60CDFF" StrokeThickness="1" Visibility="Collapsed"/>
+        </Canvas>
     </Grid>
+</Grid>
 </Window>

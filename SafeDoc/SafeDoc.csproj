@@ -10,11 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Recursos\Imagenes\carpeta.png" />
-    <None Remove="Recursos\Imagenes\copy.png" />
-    <None Remove="Recursos\Imagenes\cut.png" />
-    <None Remove="Recursos\Imagenes\flecha-izquierda.png" />
-    <None Remove="Recursos\Imagenes\paste.png" />
+    <Compile Remove="Recursos\**" />
+    <EmbeddedResource Remove="Recursos\**" />
+    <None Remove="Recursos\**" />
+    <Page Remove="Recursos\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,24 +25,6 @@
     <Content Include="Ejecutable\Release\net8.0-windows7.0\Recursos\Imagenes\paste.png" />
     <Content Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.deps.json" />
     <Content Include="Ejecutable\Release\net8.0-windows7.0\SafeDoc.runtimeconfig.json" />
-    <Content Include="Recursos\Imagenes\carpeta.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Recursos\Imagenes\copy.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Recursos\Imagenes\cut.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Recursos\Imagenes\archivo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Recursos\Imagenes\flecha-izquierda.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Recursos\Imagenes\paste.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

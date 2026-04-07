@@ -1,0 +1,130 @@
+<Window x:Class="SafeDoc.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SafeDoc - Acceso Seguro"
+        Height="550" Width="400"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize">
+
+    <Border Background="#202020" BorderBrush="#2D2D2D" BorderThickness="1" CornerRadius="8" Padding="40" Margin="10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+
+        <StackPanel VerticalAlignment="Center">
+
+            <TextBlock Text="🔒 SafeDoc" 
+                       Foreground="#FFFFFF" 
+                       FontSize="36" 
+                       FontWeight="SemiBold" 
+                       HorizontalAlignment="Center" 
+                       Margin="0,0,0,10"/>
+
+            <TextBlock Text="Almacenamiento Seguro" 
+                       Foreground="#CCCCCC" 
+                       FontSize="14" 
+                       HorizontalAlignment="Center" 
+                       Margin="0,0,0,35"/>
+
+            <TextBlock Text="Usuario" 
+                       Foreground="#CCCCCC" 
+                       FontSize="13" 
+                       FontWeight="SemiBold" 
+                       Margin="0,0,0,8"/>
+            <Border Background="#2D2D2D" CornerRadius="4" Padding="12,10" BorderBrush="#333333" BorderThickness="1" Margin="0,0,0,15">
+                <TextBox x:Name="txtUsuario" 
+                         Background="Transparent" 
+                         Foreground="#FFFFFF" 
+                         BorderThickness="0" 
+                         FontSize="16" 
+                         Height="24"
+                         CaretBrush="White"/>
+            </Border>
+
+            <TextBlock x:Name="txtInstruccion" 
+                       Text="Contraseña" 
+                       Foreground="#CCCCCC" 
+                       FontSize="13" 
+                       FontWeight="SemiBold" 
+                       Margin="0,0,0,8"/>
+            <Border Background="#2D2D2D" CornerRadius="4" Padding="12,10" BorderBrush="#333333" BorderThickness="1">
+                <PasswordBox x:Name="txtPassword" 
+                             Background="Transparent" 
+                             Foreground="#FFFFFF" 
+                             BorderThickness="0" 
+                             PasswordChar="●"
+                             FontSize="16" 
+                             Height="24"/>
+            </Border>
+
+            <Grid Margin="0,35,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Button Content="Registrar"
+                        Grid.Column="0"
+                        Height="40"
+                        Foreground="#FFFFFF"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnRegister_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="btnBorder" Background="#333333" CornerRadius="4">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="btnBorder" Property="Background" Value="#444444"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Content="Entrar"
+                        Grid.Column="2"
+                        Height="40"
+                        Foreground="#FFFFFF"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="BtnLogin_Click"
+                        IsDefault="True">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="btnBorder" Background="#005FB8" CornerRadius="4">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="btnBorder" Property="Background" Value="#0078D4"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="btnBorder" Property="Background" Value="#004A90"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <TextBlock x:Name="txtError"
+                       Foreground="#FF99A4"
+                       FontSize="13"
+                       Margin="0,20,0,0"
+                       FontWeight="SemiBold"
+                       TextAlignment="Center"/>
+
+        </StackPanel>
+    </Border>
+</Window>
