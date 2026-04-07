@@ -82,6 +82,7 @@
         <CommandBinding Command="Paste" Executed="Paste_Executed"/>
         <CommandBinding Command="Delete" Executed="Delete_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindow.CompartirCommand}" Executed="BtnCompartir_Click"/>
+        <CommandBinding Command="{x:Static local:MainWindow.EnviarRedCommand}" Executed="BtnEnviarRed_Click"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="X" Command="Cut" Modifiers="Ctrl"/>
@@ -184,6 +185,23 @@
                     </Button>
                     
                     <Border Width="1" Background="#333333" Margin="10,12"/>
+                    
+                    <Button ToolTip="Sincronización P2P" Click="BtnP2PSync_Click" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
+                         <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bgBorder" Background="Transparent" CornerRadius="4">
+                                    <TextBlock Text="📶" Foreground="#60CDFF" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" TargetName="bgBorder" Value="#2D2D2D"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <Border Width="1" Background="#333333" Margin="10,12"/>
 
                     <Button ToolTip="Recibir Carpeta (Pegar Código)" Click="BtnRecibir_Click" Background="Transparent" BorderThickness="0" Margin="2" Cursor="Hand" Width="36" Height="36">
                          <Button.Template>
@@ -273,7 +291,8 @@
                             <ContextMenu Background="#2D2D2D" Foreground="#FFFFFF" BorderBrush="#444444" BorderThickness="1">
                                 <MenuItem Header="Copiar" Command="Copy"/>
                                 <MenuItem Header="Cortar" Command="Cut"/>
-                                <MenuItem Header="Compartir" Command="{x:Static local:MainWindow.CompartirCommand}"/>
+                                <MenuItem Header="Compartir (Código Local)" Command="{x:Static local:MainWindow.CompartirCommand}"/>
+                                <MenuItem Header="Enviar por Red (P2P)" Command="{x:Static local:MainWindow.EnviarRedCommand}"/>
                                 <Separator Background="#444444"/>
                                 <MenuItem Header="Eliminar" Command="Delete" Foreground="#FF99A4"/>
                             </ContextMenu>

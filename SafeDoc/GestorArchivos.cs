@@ -63,7 +63,7 @@ namespace SafeDoc
             if (user.CarpetaCifrada == null || user.CarpetaCifrada.Length == 0)
                 return new Carpeta("Raiz");
 
-            string json = Descifrar(user.CarpetaCifrada, password);
+            string json = DescifrarManual(user.CarpetaCifrada, password);
             var raiz = JsonSerializer.Deserialize<Carpeta>(json);
             
             if (raiz == null) throw new Exception("Error al decodificar");
@@ -111,10 +111,10 @@ namespace SafeDoc
         private static byte[] CifrarCarpeta(Carpeta raiz, string password)
         {
             string json = JsonSerializer.Serialize(raiz);
-            return Cifrar(json, password);
+            return CifrarManual(json, password);
         }
 
-        private static byte[] Cifrar(string texto, string password)
+        public static byte[] CifrarManual(string texto, string password)
         {
             using Aes aes = Aes.Create();
             byte[] salt = Encoding.UTF8.GetBytes("SAFE_DOC_SALT");
@@ -155,7 +155,7 @@ namespace SafeDoc
             
             if (trans == null) throw new Exception("Código no válido.");
             
-            string json = Descifrar(trans.ContenidoCifrado, codigo.ToUpper());
+            string json = DescifrarManual(trans.ContenidoCifrado, codigo.ToUpper());
             var carpeta = JsonSerializer.Deserialize<Carpeta>(json);
             
             if (carpeta == null) throw new Exception("Error al procesar los datos.");
@@ -168,7 +168,7 @@ namespace SafeDoc
             return carpeta;
         }
 
-        private static string Descifrar(byte[] datos, string password)
+        public static string DescifrarManual(byte[] datos, string password)
         {
             using Aes aes = Aes.Create();
             byte[] salt = Encoding.UTF8.GetBytes("SAFE_DOC_SALT");

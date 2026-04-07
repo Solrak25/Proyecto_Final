@@ -12,6 +12,9 @@ namespace SafeDoc
     {
         public static readonly RoutedUICommand CompartirCommand = new RoutedUICommand(
             "Compartir", "Compartir", typeof(MainWindow));
+        
+        public static readonly RoutedUICommand EnviarRedCommand = new RoutedUICommand(
+            "EnviarRed", "EnviarRed", typeof(MainWindow));
 
         private Carpeta raiz = null!;
         private Carpeta carpetaActual = null!;
@@ -269,6 +272,28 @@ namespace SafeDoc
                 {
                     MessageBox.Show("Error al recibir: " + ex.Message);
                 }
+            }
+        }
+
+        private void BtnP2PSync_Click(object sender, RoutedEventArgs e)
+        {
+            TransferenciaRedWindow p2p = new TransferenciaRedWindow();
+            p2p.Owner = this;
+            if (p2p.ShowDialog() == true && p2p.CarpetaRecibida != null)
+            {
+                p2p.CarpetaRecibida.CarpetaMadre = carpetaActual;
+                carpetaActual.Contenido.Add(p2p.CarpetaRecibida);
+                RefrescarVista();
+            }
+        }
+
+        private void BtnEnviarRed_Click(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (WPExploradorItems.SelectedItem is Carpeta carpeta)
+            {
+                TransferenciaRedWindow p2p = new TransferenciaRedWindow(carpeta);
+                p2p.Owner = this;
+                p2p.ShowDialog();
             }
         }
 
