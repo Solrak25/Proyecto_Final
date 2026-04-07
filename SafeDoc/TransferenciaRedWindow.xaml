@@ -83,7 +83,7 @@
             <TextBlock Grid.Row="1" Text="Transfiere carpetas directamente a otro dispositivo en tu red local." 
                        Foreground="#888888" Margin="0,5,0,20" TextWrapping="Wrap"/>
 
-            <TabControl Grid.Row="2" Background="Transparent" BorderThickness="0">
+            <TabControl x:Name="TabControlPrincipial" Grid.Row="2" Background="Transparent" BorderThickness="0">
                 <!-- PANEL EMISOR -->
                 <TabItem Header="MODO EMISOR">
                     <StackPanel Margin="0,20,0,0">

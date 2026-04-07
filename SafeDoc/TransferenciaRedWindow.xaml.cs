@@ -13,15 +13,19 @@ namespace SafeDoc
         public TransferenciaRedWindow(Carpeta? carpeta = null)
         {
             InitializeComponent();
-            carpetaAEnviar = carpeta ?? new Carpeta("Vacía");
             
             if (carpeta == null)
             {
-                // Modo Receptor por defecto
-                txtCodigoGenerado.Text = "Esperando código...";
+                carpetaAEnviar = new Carpeta("Vacía");
+                // Si no hay carpeta, vamos directos a la pestaña de Recibir
+                TabControlPrincipial.SelectedIndex = 1;
+                txtCodigoGenerado.Text = "Selecciona una carpeta en el explorador para enviar.";
+                btnIniciarServidor.IsEnabled = false;
+                btnIniciarServidor.Opacity = 0.5;
             }
             else
             {
+                carpetaAEnviar = carpeta;
                 // Modo Emisor
                 string ip = GestorRed.ObtenerIPLocal();
                 txtCodigoGenerado.Text = GestorRed.GenerarCodigo(ip);
