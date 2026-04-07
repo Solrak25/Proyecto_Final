@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Linq;
 
 namespace SafeDoc
 {
@@ -12,7 +15,7 @@ namespace SafeDoc
     {
         private const int PuertoBase = 5555;
 
-        // Convierte IP y Puerto a un código "SafeDoc"
+        // Convierte IP a un código "SafeDoc"
         public static string GenerarCodigo(string ip)
         {
             byte[] ipBytes = IPAddress.Parse(ip).GetAddressBytes();
@@ -25,25 +28,34 @@ namespace SafeDoc
         {
             if (!codigo.StartsWith("SAFE-")) throw new Exception("Código no válido.");
             string base64 = codigo.Replace("SAFE-", "");
-            
-            // Re-añadir el padding para Base64 si es necesario
             while (base64.Length % 4 != 0) base64 += "=";
-            
             byte[] ipBytes = Convert.FromBase64String(base64);
             return new IPAddress(ipBytes).ToString();
         }
 
         public static string ObtenerIPLocal()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            // Intentamos buscar la IP en adaptadores Reales (WiFi/Ethernet)
+            // Evitamos adaptadores de VMware, VirtualBox, Docker o WSL
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces()
+                .Where(i => i.OperationalStatus == OperationalStatus.Up)
+                .Where(i => i.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || 
+                           i.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                .Where(i => !i.Description.ToLower().Contains("virtual") && 
+                           !i.Description.ToLower().Contains("pseudo") &&
+                           !i.Description.ToLower().Contains("docker") &&
+                           !i.Description.ToLower().Contains("wsl"));
+
+            foreach (var ni in interfaces)
             {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
+                var props = ni.GetIPProperties();
+                var ipv4 = props.UnicastAddresses.FirstOrDefault(a => a.Address.AddressFamily == AddressFamily.InterNetwork);
+                if (ipv4 != null) return ipv4.Address.ToString();
             }
-            return "127.0.0.1";
+
+            // Fallback al método tradicional si falla el filtro
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString() ?? "127.0.0.1";
         }
 
         // SERVIDOR: Envía una carpeta
@@ -53,25 +65,29 @@ namespace SafeDoc
             try
             {
                 listener.Start();
-                log("Esperando conexión...");
+                log($"SERVIDOR ACTIVO en IP: {ObtenerIPLocal()}");
+                log("Esperando conexión de confianza (RECUERDA: MISMA RED WIFI)...");
                 
                 using TcpClient client = await listener.AcceptTcpClientAsync();
-                log("Cliente conectado. Enviando datos...");
+                log("¡CONECTADO! Empezando envío...");
 
                 using NetworkStream stream = client.GetStream();
                 
-                // Serializamos y ciframos (usando el puerto como password temporal o nada si ya confían en la red)
-                // Para simplificar y mantener el esquema, ciframos con "P2P_TRANSFER"
                 string json = JsonSerializer.Serialize(carpeta);
                 byte[] data = GestorArchivos.CifrarManual(json, "P2P_TRANSFER");
 
-                // Enviamos tamaño primero
-                byte[] size = BitConverter.GetBytes(data.Length);
-                await stream.WriteAsync(size, 0, size.Length);
+                // Enviamos tamaño (4 bytes)
+                byte[] sizeBytes = BitConverter.GetBytes(data.Length);
+                await stream.WriteAsync(sizeBytes, 0, 4);
                 
                 // Enviamos contenido
                 await stream.WriteAsync(data, 0, data.Length);
-                log("¡Transferencia completada!");
+                log("¡Carpeta enviada correctamente!");
+            }
+            catch (Exception ex)
+            {
+                log("Error en Servidor: " + ex.Message);
+                throw;
             }
             finally
             {
@@ -85,19 +101,32 @@ namespace SafeDoc
             try
             {
                 using TcpClient client = new TcpClient();
-                log($"Conectando a {ip}...");
-                await client.ConnectAsync(ip, PuertoBase);
+                log($"Intentando conectar a {ip} (Puerto {PuertoBase})...");
                 
+                // Timeout de 5 segundos para no esperar "mucho" si el firewall bloquea
+                var connectTask = client.ConnectAsync(ip, PuertoBase);
+                if (await Task.WhenAny(connectTask, Task.Delay(5000)) != connectTask)
+                {
+                    log("TIEMPO AGOTADO: El otro PC no responde. ¿Estáis en la misma red?");
+                    return null;
+                }
+
                 using NetworkStream stream = client.GetStream();
-                log("Conectado. Descargando...");
+                log("¡CONECTADO! Descargando datos...");
 
-                // Leemos tamaño
+                // Leemos tamaño (asegurando 4 bytes)
                 byte[] sizeBuffer = new byte[4];
-                await stream.ReadAsync(sizeBuffer, 0, 4);
-                int size = BitConverter.GetBytes(BitConverter.ToUInt32(sizeBuffer, 0)).Length == 4 
-                           ? BitConverter.ToInt32(sizeBuffer, 0) : 0;
+                int totalRead = 0;
+                while (totalRead < 4)
+                {
+                    int r = await stream.ReadAsync(sizeBuffer, totalRead, 4 - totalRead);
+                    if (r == 0) throw new Exception("Conexión cerrada prematuramente.");
+                    totalRead += r;
+                }
+                int size = BitConverter.ToInt32(sizeBuffer, 0);
+                log($"Tamaño detectado: {size} bytes. Descargando...");
 
-                // Leemos datos
+                // Leemos datos en fragmentos
                 byte[] data = new byte[size];
                 int read = 0;
                 while (read < size)
@@ -107,13 +136,18 @@ namespace SafeDoc
                     read += r;
                 }
 
-                log("Descifra y procesando...");
+                log("Desencriptando y procesando carpeta...");
                 string json = GestorArchivos.DescifrarManual(data, "P2P_TRANSFER");
                 return JsonSerializer.Deserialize<Carpeta>(json);
             }
+            catch (SocketException sex)
+            {
+                log("ERROR DE RED: El firewall o el router está bloqueando la conexión.");
+                return null;
+            }
             catch (Exception ex)
             {
-                log("Error: " + ex.Message);
+                log("ERROR: " + ex.Message);
                 return null;
             }
         }
