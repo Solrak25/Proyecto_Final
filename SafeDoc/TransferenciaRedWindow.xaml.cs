@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Threading.Tasks;
 
 namespace SafeDoc
@@ -17,10 +18,11 @@ namespace SafeDoc
             if (carpeta == null)
             {
                 // Modo Receptor por defecto
-                // txtCodigoGenerado.Visibility = Visibility.Collapsed;
+                txtCodigoGenerado.Text = "Esperando código...";
             }
             else
             {
+                // Modo Emisor
                 string ip = GestorRed.ObtenerIPLocal();
                 txtCodigoGenerado.Text = GestorRed.GenerarCodigo(ip);
             }
@@ -29,18 +31,42 @@ namespace SafeDoc
         private void Log(string mensaje)
         {
             Dispatcher.Invoke(() => {
-                txtLog.Text += $"\n[{DateTime.Now:HH:mm:ss}] {mensaje}";
+                txtLog.Text += $"\n> {mensaje}";
+                scrollLog.ScrollToEnd();
             });
+        }
+
+        private void BtnCopiar_Click(object sender, RoutedEventArgs e)
+        {
+            if (txtCodigoGenerado.Text != "Esperando código...")
+            {
+                Clipboard.SetText(txtCodigoGenerado.Text);
+                Log("¡Código copiado al portapapeles!");
+            }
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
         }
 
         private async void BtnIniciarServidor_Click(object sender, RoutedEventArgs e)
         {
             btnIniciarServidor.IsEnabled = false;
+            btnIniciarServidor.Content = "ESCUCHANDO...";
             try
             {
-                Log("Iniciando servidor P2P...");
+                Log("Iniciando socket TCP...");
                 await Task.Run(() => GestorRed.EnviarCarpetaAsync(carpetaAEnviar, Log));
                 Log("Transferencia terminada.");
+                MessageBox.Show("¡Carpeta enviada con éxito!", "P2P", MessageBoxButton.OK, MessageBoxImage.Information);
+                Close();
             }
             catch (Exception ex)
             {
@@ -49,6 +75,7 @@ namespace SafeDoc
             finally
             {
                 btnIniciarServidor.IsEnabled = true;
+                btnIniciarServidor.Content = "INICIAR SERVIDOR DE ENVÍO";
             }
         }
 
@@ -58,6 +85,7 @@ namespace SafeDoc
             if (string.IsNullOrWhiteSpace(codigo)) return;
 
             btnConectar.IsEnabled = false;
+            btnConectar.Content = "CONECTANDO...";
             try
             {
                 string ip = GestorRed.ObtenerIPDesdeCodigo(codigo);
@@ -69,22 +97,23 @@ namespace SafeDoc
                 {
                     CarpetaRecibida = resultado;
                     Log("¡Carpeta recibida con éxito!");
-                    MessageBox.Show("¡Carpeta recibida! Se añadirá a tu directorio actual.");
+                    MessageBox.Show("¡Carpeta recibida! Se añadirá a tu directorio actual.", "P2P", MessageBoxButton.OK, MessageBoxImage.Information);
                     DialogResult = true;
                     Close();
                 }
                 else
                 {
-                    Log("No se recibió nada.");
+                    Log("No se recibió nada o el emisor se desconectó.");
                 }
             }
             catch (Exception ex)
             {
-                Log("Error de conexión: " + ex.Message);
+                Log("Error: " + ex.Message);
             }
             finally
             {
                 btnConectar.IsEnabled = true;
+                btnConectar.Content = "CONECTAR Y DESCARGAR";
             }
         }
     }
